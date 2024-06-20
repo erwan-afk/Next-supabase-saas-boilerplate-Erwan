@@ -19,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className="font-RocGrotesk">
         <QueryProvider>
           <ThemeProvider
             attribute="class"

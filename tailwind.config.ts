@@ -18,46 +18,96 @@ const config = {
 			},
 		},
 		extend: {
+			fontFamily :{ 
+				PPNeueBit: ["PPNeueBit","sans-serif"], 
+				RocGrotesk: ["Roc-grotesk","sans-serif"]
+			},
 			colors: {
-				border: "hsl(var(--border))",
-				input: "hsl(var(--input))",
-				ring: "hsl(var(--ring))",
-				background: "hsl(var(--background))",
-				foreground: "hsl(var(--foreground))",
-				primary: {
-					DEFAULT: "hsl(var(--primary))",
-					foreground: "hsl(var(--primary-foreground))",
+				fasleblack:'#0E0E0E',
+				goldyellow:'#FFBA00',
+				goldyellowhover:'rgba(255, 186, 0, 0.25);',
+				white:'#FAFAFA',
+				grey:{
+					100:'#D9D9D9',
+					200:'#B6B6B6',
+					300:'#989898',
+					400:'#676767',
+					500:'#474747',
+					600:'#242424',
 				},
-				secondary: {
-					DEFAULT: "hsl(var(--secondary))",
-					foreground: "hsl(var(--secondary-foreground))",
-				},
-				destructive: {
-					DEFAULT: "hsl(var(--destructive))",
-					foreground: "hsl(var(--destructive-foreground))",
-				},
-				muted: {
-					DEFAULT: "hsl(var(--muted))",
-					foreground: "hsl(var(--muted-foreground))",
-				},
-				accent: {
-					DEFAULT: "hsl(var(--accent))",
-					foreground: "hsl(var(--accent-foreground))",
-				},
-				popover: {
-					DEFAULT: "hsl(var(--popover))",
-					foreground: "hsl(var(--popover-foreground))",
-				},
-				card: {
-					DEFAULT: "hsl(var(--card))",
-					foreground: "hsl(var(--card-foreground))",
-				},
+				blur:'rgba(255, 255, 255, 0.05);',
+				blur10:'rgba(255, 255, 255, 0.1);',
+				voltred:'#FF5050',
+				goldgradient:{
+					dark:'#FFA800',
+					light:'#FFB800'
+				}
+			},
+			fontSize: {
+				12: '0.75rem',
+				16: '1rem',
+				20: '1.25rem',
+				24: '1.5rem',
+				30: '1.875rem',
+				36: '2.25rem',
+				40: '2.5rem',
+				48: '3rem',
+				50: '3.125rem',
+				64: '4rem',
+
+			},
+			dropShadow: {
+				'glow': '0px 0px 30px rgba(255, 184, 0, 0.3)',
+				'glowred': '0px 0px 30px rgba(255, 0, 0, 0.9)',
+			},
+			spacing: {
+				5: '5px',
+				8: '8px',
+				10: '10px',
+				15: '15px',
+				20: '20px',
+				25: '25px',
+				50: '50px',
+				70: '70px',
 			},
 			borderRadius: {
 				lg: "var(--radius)",
 				md: "calc(var(--radius) - 2px)",
 				sm: "calc(var(--radius) - 4px)",
+				8: '8px',
+				16: '16px',
 			},
+			transitionDuration: {
+				DEFAULT: '150ms',
+				75: '75ms',
+				100: '100ms',
+				150: '150ms',
+				200: '200ms',
+				300: '300ms',
+				500: '500ms',
+				700: '700ms',
+				1000: '1000ms',
+			},
+			transitionProperty: {
+				none: 'none',
+				all: 'all',
+				DEFAULT:
+					'color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter',
+				colors: 'color, background-color, border-color, text-decoration-color, fill, stroke',
+				opacity: 'opacity',
+				shadow: 'box-shadow',
+				transform: 'transform',
+			},
+			backgroundImage: {
+				'render': "url('/RENDER_1-20-1.png')",
+			},
+			gridAutoRows: {
+				'auto': 'auto',
+			  },
+			  gridTemplateRows: {
+				'layout': 'auto 1fr',
+			  },
+			  
 			keyframes: {
 				"accordion-down": {
 					from: { height: "0" },
