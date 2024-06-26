@@ -470,7 +470,7 @@ export const Settings: React.FC = () => {
           <p className="font-PPNeueBit text-24 leading-3">Se déconnecter</p>
         </div>
       </div>
-      <div className="flex-1 flex flex-col p-50 gap-50 bg-blur rounded-16">
+      <div className="flex-1 flex flex-col p-50 gap-25 bg-blur rounded-16">
         {renderView()}
       </div>
     </div>

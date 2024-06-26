@@ -13,7 +13,7 @@ export const Navigation: React.FC<NavigationProps> = ({
   return (
     <div className="col-span-10 row-span-1 h-fit flex flex-row justify-between gap-70">
       <div className="flex flex-row gap-[12px] h-[60px] items-center ">
-        <div className="w-fit">
+        <div onClick={() => setView("home")} className="w-fit cursor-pointer">
           <Logo />
         </div>
         <div className="flex flex-col justify-center ">
@@ -31,6 +31,7 @@ export const Navigation: React.FC<NavigationProps> = ({
           +362 XP
         </div>
       </div>
+      <Software state={""} />
       <div className="flex flex-row gap-25">
         <button
           className={`bg-blur  w-[60px] h-[60px] rounded-16 flex justify-center items-center hover:bg-goldyellowhover hover:text-goldyellow hover:drop-shadow-glow transition-all ease-in-out duration-200 ${
@@ -48,6 +49,48 @@ export const Navigation: React.FC<NavigationProps> = ({
         >
           <UserProfile />
         </button>
+      </div>
+    </div>
+  );
+};
+interface SoftwareProps {
+  state: string;
+}
+
+const Software: React.FC<SoftwareProps> = ({ state }) => {
+  let icon;
+  let label;
+  let textColor;
+
+  switch (state) {
+    case "instable":
+      icon = <UserProfile />;
+      label = "INSTABLE";
+      textColor = "text-voltred";
+      break;
+    case "connecté":
+      icon = <UserProfile />;
+      label = "CONNECTÉ";
+      textColor = "text-green-500";
+      break;
+    default:
+      icon = <UserProfile />;
+      label = "DÉCONNECTÉ";
+      textColor = "text-grey-300";
+      break;
+  }
+
+  return (
+    <div className="flex flex-row items-center transition-all ease-in-out duration-200">
+      <div
+        className={`bg-blur w-[60px] h-[60px] rounded-16 flex justify-center items-center hover:bg-goldyellowhover hover:text-goldyellow hover:drop-shadow-glow transition-all ease-in-out duration-200 ${textColor} transition-all ease-in-out duration-200`}
+      >
+        {icon}
+      </div>
+      <div
+        className={`flex items-center font-bold rounded-r-8 text-16 px-10 h-[31px] border-grey-500 border-t border-b border-r ${textColor} transition-all ease-in-out duration-200`}
+      >
+        {label}
       </div>
     </div>
   );
