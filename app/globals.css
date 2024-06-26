@@ -34,6 +34,19 @@
 }
 
 
+.bg-blur {
+  background-color: rgba(255, 255, 255, 0.05); /* Couleur de fond avec transparence */
+  backdrop-filter: blur(30px); /* Applique un flou de 30px au contenu derrière */
+}
+
+.feature-card:hover .inner-circle {
+  color: #FFBA00; /* ou utiliser une classe comme 'text-goldyellow' */
+  border-color: #FFBA00; /* ou utiliser une classe comme 'border-goldyellow' */
+  background-color: rgba(255, 186, 0, 0.25); /* ou utiliser une classe comme 'bg-goldyellowhover' */
+  box-shadow: 0px 0px 80px rgba(255, 184, 0, 0.4); /* ou utiliser une classe comme 'drop-shadow-glow' */
+}
+
+
 .tk-roc-grotesk-variable { font-family: "roc-grotesk-variable",sans-serif; }
 
 .glowBox {
@@ -175,3 +188,45 @@
   border-color: #989898;
 }
 
+input[type="checkbox"] {
+  appearance: none;
+  backdrop-filter: blur(30px);
+  background-color: rgba(255, 255, 255, 0.05);
+  margin: 0;
+  font: inherit;
+  color: currentColor;
+  width: 25px;
+  height: 25px;
+  border: 1px solid #676767;
+  border-radius: 4px;
+  display: grid;
+  place-content: center;
+}
+
+
+
+input[type="checkbox"]::before {
+  content: "";
+  width: 13px;
+  height: 13px;
+  border-radius: 2px;
+  transform: scale(0);
+  transition: 120ms transform ease-in-out;
+  box-shadow: inset 1em 1em #FFBA00;
+  background-color: CanvasText;
+}
+
+input[type="checkbox"]:checked::before {
+  transform: scale(1);
+  
+}
+
+input[type="checkbox"]:checked {
+  border: 1px solid #FFBA00;
+  
+}
+
+input[type="checkbox"]:focus {
+  width: 25px;
+  height: 25px;
+}

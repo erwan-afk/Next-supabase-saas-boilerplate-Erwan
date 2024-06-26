@@ -25,36 +25,34 @@ const SubscriptionPage = () => {
       case "settings":
         return <Settings />;
       case "modules":
-        return <Modules />;
+        return <Modules setView={setView} />;
       case "home":
-        return <Home />;
+        return <Home setView={setView} />;
       default:
-        return <Home />;
+        return <Home setView={setView} />;
     }
   };
 
   return (
-    <div>
-      <div>
-        {isActive ? (
-          <div className="bg-falseblack mx-auto max-w-screen-2xl w-full grid grid-cols-10 gap-50 p-50 h-screen grid-rows-layout">
-            <Navigation setView={setView} />
-            <div className="col-span-10 row-span-9 flex-1 gap-50 grid grid-cols-10 ">
-              <SideNavigation setView={setView} />
-              <div className="col-span-9 min-h-0 ">{renderView()}</div>
-            </div>
+    <div className="bg-background bg-cover">
+      {isActive ? (
+        <div className=" mx-auto max-w-screen-2xl w-full grid grid-cols-10 gap-50 p-50 h-screen grid-rows-layout">
+          <Navigation setView={setView} currentView={view} />
+          <div className="col-span-10 row-span-9 flex-1 gap-50 grid grid-cols-10">
+            <SideNavigation setView={setView} currentView={view} />
+            <div className="col-span-9 min-h-0">{renderView()}</div>
           </div>
-        ) : (
-          <div className="max-w-6xl min-h-screen mx-auto py-10 space-y-10 px-5 xl:px-0">
-            <Navbar />
+        </div>
+      ) : (
+        <div className="max-w-6xl min-h-screen mx-auto py-10 space-y-10 px-5 xl:px-0">
+          <Navbar />
 
-            <h1 className="text-center text-3xl font-bold">
-              You need to subscribe to see the data
-            </h1>
-            <Price />
-          </div>
-        )}
-      </div>
+          <h1 className="text-center text-3xl font-bold">
+            You need to subscribe to see the data
+          </h1>
+          <Price />
+        </div>
+      )}
     </div>
   );
 };

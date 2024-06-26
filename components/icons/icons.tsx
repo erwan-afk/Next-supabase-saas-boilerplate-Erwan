@@ -19,8 +19,8 @@ export const Logo: React.FC = () => {
       className="drop-shadow-glow"
     >
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M43.6364 39.6V44H30.0817L35.7073 22H30.5455H24L26.9534 8.8L28.9224 0H43.6364V4.4H48V39.6H43.6364ZM18.3744 44L20.6246 35.2L24 22H17.4545H12.2927L17.2151 0H4.36364V4.4H0V39.6H4.36364V44H18.3744Z"
         fill="url(#paint0_linear_1214_8906)"
       />
@@ -33,8 +33,8 @@ export const Logo: React.FC = () => {
           y2="0.551562"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#FFA800" />
-          <stop offset="1" stop-color="#FFB800" />
+          <stop stopColor="#FFA800" />
+          <stop offset="1" stopColor="#FFB800" />
         </linearGradient>
       </defs>
     </svg>
