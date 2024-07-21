@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { SliderProps } from "react-aria-components";
 import {
   Label,
@@ -8,11 +9,12 @@ import {
 } from "react-aria-components";
 
 interface MySliderProps<T> extends SliderProps<T> {
-  label?: string;
+  label: string; // Rendre le label obligatoire
   thumbLabels?: string[];
   min?: number;
   max?: number;
   unite?: string;
+  onChangeEnd?: (value: T) => void;
 }
 
 export function MySlider<T extends number | number[]>({
@@ -21,11 +23,32 @@ export function MySlider<T extends number | number[]>({
   min,
   max,
   unite,
+  onChange,
+  onChangeEnd,
   ...props
 }: MySliderProps<T>) {
+  const [internalValue, setInternalValue] = useState<T>(props.value as T);
+
+  const handleChange = (value: T) => {
+    setInternalValue(value);
+    if (onChange) {
+      onChange(value);
+    }
+  };
+
   return (
-    <div className="flex justify-center w-full">
-      <Slider {...props} className="w-full" minValue={min} maxValue={max}>
+    <div className="flex flex-col justify-center w-full">
+      <Label className="mb-2"></Label>
+      <Slider
+        {...props}
+        className="w-full"
+        minValue={min}
+        maxValue={max}
+        value={internalValue}
+        onChange={handleChange}
+        onChangeEnd={onChangeEnd}
+        aria-label={label}
+      >
         <div className="flex text-white">
           <div className="flex flex-row justify-between w-full text-16 font-bold pb-[5px] text-grey-400 transform -translate-y-[10px]">
             <div>{min}</div>
@@ -51,9 +74,7 @@ export function MySlider<T extends number | number[]>({
 
             return (
               <>
-                {/* track */}
                 <div className="absolute h-[10px] translate-y-[-50%] w-full rounded-full bg-blur border border-goldyellow" />
-                {/* fill */}
                 <div
                   className="absolute h-[10px] translate-y-[-50%] rounded-full bg-goldyellow"
                   style={fillStyle}
@@ -62,7 +83,7 @@ export function MySlider<T extends number | number[]>({
                   <div key={i} className="relative">
                     <SliderThumb
                       index={i}
-                      aria-label={thumbLabels?.[i]}
+                      aria-label={thumbLabels?.[i] || `${label} thumb ${i + 1}`}
                       className="h-[25px] w-[25px] top-[50%] cursor-grab rounded-full border-[10px] border-goldyellow transition bg-grey-600 outline-none focus-visible:ring-2 ring-black"
                     />
                     <SliderOutput

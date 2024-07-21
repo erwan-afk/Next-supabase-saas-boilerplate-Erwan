@@ -13,26 +13,67 @@
  * http://www.adobe.com/products/eulas/tou_typekit. For font license
  * information, see the list below.
  *
+ * roc-grotesk:
+ *   - http://typekit.com/eulas/00000000000000007735b7bc
+ *   - http://typekit.com/eulas/00000000000000007735b7c0
+ *   - http://typekit.com/eulas/00000000000000007735b7c3
+ *   - http://typekit.com/eulas/00000000000000007735b7c5
+ *   - http://typekit.com/eulas/00000000000000007735b7c8
+ *   - http://typekit.com/eulas/00000000000000007735b7cc
+ *   - http://typekit.com/eulas/00000000000000007735b7d0
+ *   - http://typekit.com/eulas/00000000000000007735b7da
  * roc-grotesk-variable:
  *   - http://typekit.com/eulas/0000000000000000774b970f
  *
  * © 2009-2024 Adobe Systems Incorporated. All Rights Reserved.
  */
-/*{"last_published":"2024-06-16 21:22:18 UTC"}*/
+/*{"last_published":"2024-06-30 13:45:26 UTC"}*/
 
-@import url("https://p.typekit.net/p.css?s=1&k=alf7adh&ht=tk&f=51571&a=220424588&app=typekit&e=css");
+@import url("https://p.typekit.net/p.css?s=1&k=alf7adh&ht=tk&f=41077.41078.41097.41098.41108.41109.41110.41112.51571&a=220424588&app=typekit&e=css");
+
+
 
 @font-face {
-    font-family: "Roc-grotesk";
-    src: url("https://use.typekit.net/af/2e2b50/0000000000000000774b970f/30/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3") format("woff2"),
-         url("https://use.typekit.net/af/2e2b50/0000000000000000774b970f/30/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3") format("woff"),
-         url("https://use.typekit.net/af/2e2b50/0000000000000000774b970f/30/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3") format("opentype");
-    font-display: auto;
-    font-style: normal;
-    font-weight: 400;
-    font-stretch: normal;
+font-family:"roc-grotesk";
+src:url("https://use.typekit.net/af/c4fccd/00000000000000007735b7c0/30/l?subset_id=2&fvd=n6&v=3") format("woff2"),url("https://use.typekit.net/af/c4fccd/00000000000000007735b7c0/30/d?subset_id=2&fvd=n6&v=3") format("woff"),url("https://use.typekit.net/af/c4fccd/00000000000000007735b7c0/30/a?subset_id=2&fvd=n6&v=3") format("opentype");
+font-display:auto;font-style:normal;font-weight:600;font-stretch:normal;
 }
 
+
+@font-face {
+font-family:"roc-grotesk";
+src:url("https://use.typekit.net/af/be643d/00000000000000007735b7c5/30/l?subset_id=2&fvd=n2&v=3") format("woff2"),url("https://use.typekit.net/af/be643d/00000000000000007735b7c5/30/d?subset_id=2&fvd=n2&v=3") format("woff"),url("https://use.typekit.net/af/be643d/00000000000000007735b7c5/30/a?subset_id=2&fvd=n2&v=3") format("opentype");
+font-display:auto;font-style:normal;font-weight:200;font-stretch:normal;
+}
+
+
+
+@font-face {
+font-family:"roc-grotesk";
+src:url("https://use.typekit.net/af/9ef671/00000000000000007735b7cc/30/l?subset_id=2&fvd=n3&v=3") format("woff2"),url("https://use.typekit.net/af/9ef671/00000000000000007735b7cc/30/d?subset_id=2&fvd=n3&v=3") format("woff"),url("https://use.typekit.net/af/9ef671/00000000000000007735b7cc/30/a?subset_id=2&fvd=n3&v=3") format("opentype");
+font-display:auto;font-style:normal;font-weight:300;font-stretch:normal;
+}
+
+
+@font-face {
+font-family:"roc-grotesk";
+src:url("https://use.typekit.net/af/b8039d/00000000000000007735b7da/30/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n1&v=3") format("woff2"),url("https://use.typekit.net/af/b8039d/00000000000000007735b7da/30/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n1&v=3") format("woff"),url("https://use.typekit.net/af/b8039d/00000000000000007735b7da/30/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n1&v=3") format("opentype");
+font-display:auto;font-style:normal;font-weight:100;font-stretch:normal;
+}
+
+@font-face {
+font-family:"roc-grotesk-variable";
+src:url("https://use.typekit.net/af/2e2b50/0000000000000000774b970f/30/l?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3") format("woff2"),url("https://use.typekit.net/af/2e2b50/0000000000000000774b970f/30/d?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3") format("woff"),url("https://use.typekit.net/af/2e2b50/0000000000000000774b970f/30/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3") format("opentype");
+font-display:auto;font-style:normal;font-weight:400;font-stretch:normal;
+}
+
+/* @import url("https://use.typekit.net/alf7adh.css"); */
+
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
 .bg-blur {
   background-color: rgba(255, 255, 255, 0.05); /* Couleur de fond avec transparence */
@@ -229,4 +270,18 @@ input[type="checkbox"]:checked {
 input[type="checkbox"]:focus {
   width: 25px;
   height: 25px;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* For IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.cacher {
+  display: none !important;
 }

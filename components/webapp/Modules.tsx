@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { FeatureCard } from "./FeatureCard";
-import { UserIcon } from "lucide-react";
-import { UserProfile } from "../icons/icons";
-
-import { MySlider } from "./Slider";
-import { MyRadioGroup } from "./RadioGroup";
-import { Checkbox, CheckboxGroup } from "./CheckboxGroup";
+import { Add, Star, SuggestFeature, UserProfile } from "../icons/icons";
 import { useViewConfig, ViewConfig } from "./Configuration";
+import { supabaseBrowser } from "@/lib/supabase/browser";
+import { Autoclicker } from "./Modules/Autoclicker";
+import { FastPlace } from "./Modules/FastPlace";
+import { AutoBlock } from "./Modules/AutoBlock";
+
+import { OverlayScrollbarsComponent } from "overlayscrollbars-react";
+import "overlayscrollbars/overlayscrollbars.css";
+import Spinner from "../ui/Spinner";
+import Link from "next/link";
 
 interface FeatureStatus {
   view: string;
@@ -58,89 +62,152 @@ export const Modules: React.FC<ModulesProps> = ({ showfavorite, setView }) => {
 
   const handleFeatureCardClick = (view: string) => {
     if (setView) {
-      setView(view); // Appeler setView pour mettre à jour la vue dans SubscriptionPage
+      setView(view); // Update the view in SubscriptionPage
     }
   };
 
   const handleFeatureCardClickSetting = <T extends keyof ViewConfig>(
     view: T
   ) => {
-    setActiveView(view); // Appeler setView pour mettre à jour la vue dans SubscriptionPage
+    setActiveView(view); // Update the active view
   };
 
-  const loadFeatureStatusFromLocalStorage = () => {
-    const storedStatus = localStorage.getItem("featureStatus");
-    return storedStatus ? JSON.parse(storedStatus) : null;
-  };
-
-  // Fonction pour sauvegarder les états dans le localStorage
-  const saveFeatureStatusToLocalStorage = (data: FeatureStatus[]): void => {
-    localStorage.setItem("featureStatus", JSON.stringify(data));
-  };
-
-  // Fonction pour charger les favoris depuis le localStorage
-  const loadFeatureFavoriteStatusFromLocalStorage = () => {
-    const storedFavorites = localStorage.getItem("featureFavoriteStatus");
-    return storedFavorites ? JSON.parse(storedFavorites) : null;
-  };
-
-  // Fonction pour sauvegarder les favoris dans le localStorage
-  const saveFeatureFavoriteStatusToLocalStorage = (
-    data: FeatureFavoriteStatus[]
-  ): void => {
-    localStorage.setItem("featureFavoriteStatus", JSON.stringify(data));
-  };
-
-  const initialFeatures: ViewNames[] = [
-    "AutoClicker",
-    "FastPlace",
-    "AutoBlock",
-    "RandomFeature",
-  ];
-
-  const [featureStatus, setFeatureStatus] = useState<FeatureStatus[]>(() => {
-    const storedStatus = loadFeatureStatusFromLocalStorage();
-    return storedStatus
-      ? storedStatus
-      : initialFeatures.map((feature) => ({ view: feature, isActive: true }));
-  });
-
+  // Fetch and save data from/to Supabase
+  const [featureStatus, setFeatureStatus] = useState<FeatureStatus[]>([]);
   const [featureFavoriteStatus, setFeatureFavoriteStatus] = useState<
     FeatureFavoriteStatus[]
-  >(() => {
-    const storedFavorites = loadFeatureFavoriteStatusFromLocalStorage();
-    return storedFavorites
-      ? storedFavorites
-      : initialFeatures.map((feature) => ({ view: feature, isFavorite: true }));
-  });
-
-  // Utilisation des fonctions de sauvegarde lorsque les états changent
-  useEffect(() => {
-    saveFeatureStatusToLocalStorage(featureStatus);
-  }, [featureStatus]);
+  >([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [actionLoading, setActionLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    saveFeatureFavoriteStatusToLocalStorage(featureFavoriteStatus);
-  }, [featureFavoriteStatus]);
+    const fetchFeatureStatus = async () => {
+      setLoading(true);
+      const supabase = supabaseBrowser();
+      const { data: userData, error: userError } =
+        await supabase.auth.getUser();
+
+      if (userError) {
+        console.error("Error fetching user data:", userError);
+        setLoading(false);
+        return;
+      }
+
+      if (userData?.user?.id) {
+        const { data: moduleData, error: moduleError } = await supabase
+          .from("Modules")
+          .select("*")
+          .eq("id", userData.user.id);
+
+        if (moduleError) {
+          console.error("Error fetching modules:", moduleError);
+        } else if (moduleData && moduleData.length > 0) {
+          const moduleConfig = moduleData[0];
+          setFeatureStatus([
+            { view: "AutoClicker", isActive: !moduleConfig.autoclicker_active },
+            { view: "FastPlace", isActive: !moduleConfig.fastplace_active },
+            { view: "AutoBlock", isActive: !moduleConfig.autoblock_active },
+            {
+              view: "RandomFeature",
+              isActive: !moduleConfig.randomfeature_active,
+            },
+          ]);
+          setFeatureFavoriteStatus([
+            {
+              view: "AutoClicker",
+              isFavorite: moduleConfig.autoclicker_favorite,
+            },
+            { view: "FastPlace", isFavorite: moduleConfig.fastplace_favorite },
+            { view: "AutoBlock", isFavorite: moduleConfig.autoblock_favorite },
+            {
+              view: "RandomFeature",
+              isFavorite: moduleConfig.randomfeature_favorite,
+            },
+          ]);
+        }
+      }
+      setLoading(false);
+    };
+
+    fetchFeatureStatus();
+  }, []);
+
+  const updateModuleStatus = async (view: string, isActive: boolean) => {
+    setActionLoading(true);
+    const supabase = supabaseBrowser();
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+
+    if (userError) {
+      console.error("Error fetching user data:", userError);
+      setActionLoading(false);
+      return;
+    }
+
+    if (userData?.user?.id) {
+      const { error: updateError } = await supabase
+        .from("Modules")
+        .update({ [`${view.toLowerCase()}_active`]: !isActive })
+        .eq("id", userData.user.id);
+
+      if (updateError) {
+        console.error("Error updating module status:", updateError);
+      }
+    }
+    setActionLoading(false);
+  };
+
+  const updateFavoriteStatus = async (view: string, isFavorite: boolean) => {
+    setActionLoading(true);
+    const supabase = supabaseBrowser();
+    const { data: userData, error: userError } = await supabase.auth.getUser();
+
+    if (userError) {
+      console.error("Error fetching user data:", userError);
+      setActionLoading(false);
+      return;
+    }
+
+    if (userData?.user?.id) {
+      const { error: updateError } = await supabase
+        .from("Modules")
+        .update({ [`${view.toLowerCase()}_favorite`]: isFavorite })
+        .eq("id", userData.user.id);
+
+      if (updateError) {
+        console.error("Error updating favorite status:", updateError);
+      }
+    }
+    setActionLoading(false);
+  };
 
   const toggleFeatureStatus = (view: ViewNames) => {
-    setFeatureStatus((prevStatus) =>
-      prevStatus.map((feature) =>
+    setFeatureStatus((prevStatus) => {
+      const newStatus = prevStatus.map((feature) =>
         feature.view === view
           ? { ...feature, isActive: !feature.isActive }
           : feature
-      )
-    );
+      );
+      const updatedFeature = newStatus.find((feature) => feature.view === view);
+      if (updatedFeature) {
+        updateModuleStatus(updatedFeature.view, updatedFeature.isActive);
+      }
+      return newStatus;
+    });
   };
 
   const toggleFavoriteStatus = (view: ViewNames) => {
-    setFeatureFavoriteStatus((prevStatus) =>
-      prevStatus.map((feature) =>
+    setFeatureFavoriteStatus((prevStatus) => {
+      const newStatus = prevStatus.map((feature) =>
         feature.view === view
           ? { ...feature, isFavorite: !feature.isFavorite }
           : feature
-      )
-    );
+      );
+      const updatedFeature = newStatus.find((feature) => feature.view === view);
+      if (updatedFeature) {
+        updateFavoriteStatus(updatedFeature.view, updatedFeature.isFavorite);
+      }
+      return newStatus;
+    });
   };
 
   const getFeatureStatus = (view: string) => {
@@ -156,7 +223,7 @@ export const Modules: React.FC<ModulesProps> = ({ showfavorite, setView }) => {
   };
 
   const renderView = () => {
-    const isActive = getFeatureStatus(activeView!);
+    const isActive = !getFeatureStatus(activeView!); // Inverted logic
     const isFavorite = getFavoriteStatus(activeView!);
     const view = activeView as keyof ViewConfig;
     console.log(viewConfig[view].sliderCPSValues);
@@ -164,398 +231,24 @@ export const Modules: React.FC<ModulesProps> = ({ showfavorite, setView }) => {
     switch (activeView) {
       case "AutoClicker":
         return (
-          <>
-            <div className="flex flex-col gap-50">
-              <div className="flex flex-row justify-between items-center pb-25 border-b border-grey-500 ">
-                <div className="flex flex-row gap-25">
-                  <div className="flex">
-                    <img src="/minecraft-item/autoclicker.png" alt="" />
-                  </div>
-                  <div className="flex flex-col gap-5">
-                    <h1 className="text-48 leading-8 font-bold font-PPNeueBit text-goldyellow">
-                      Auto Clicker
-                    </h1>
-                    <p className="text-20">CONFIGURATION</p>
-                  </div>
-                </div>
-                <div className="flex flex-col  items-center">
-                  <div className="button b2" id="button-13">
-                    <input
-                      onClick={() => toggleFeatureStatus("AutoClicker")}
-                      type="checkbox"
-                      className="checkbox"
-                      checked={isActive}
-                    />
-                    <div className="knobs">
-                      <span></span>
-                    </div>
-                    <div className="layer"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-row ">
-              <div className="flex-1 pr-50">
-                <p className="text-20 text-grey-300">
-                  Ce module permet d’imiter{" "}
-                  <span className="font-bold text-grey-100">
-                    les mouvements de clics{" "}
-                  </span>
-                  d’un combat. Très précis, il offre un grand nombre d’options{" "}
-                  <span className="font-bold text-grey-100">
-                    à personnaliser selon vos habitudes.
-                  </span>
-                </p>
-              </div>
-              <div className="flex-1 ">
-                <div className=" bg-blur rounded-16 flex flex-row justify-end p-25 items-center h-fit ">
-                  <div>
-                    <p className="text-20 text-grey-100 font-bold">
-                      TOUCHE ASSOCIÉE : K
-                    </p>
-                    <p className="text-16 text-grey-300">
-                      Clique-ici pour changer la touche associée au module{" "}
-                      <span className="font-bold text-grey-200">
-                        Auto Clicker.
-                      </span>
-                    </p>
-                  </div>
-                  <div>
-                    <div className="w-[64px] h-[64px] rounded-8 border-2 text-goldyellow border-goldyellow bg-touche bg-cover drop-shadow-glowlight flex items-center justify-center font-bold text-24">
-                      K
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-row ">
-              <div className="flex-1 pr-50 flex items-center">
-                <MyRadioGroup
-                  options={viewConfig[view].options}
-                  selectedValue={viewConfig[view].selectedOption}
-                  onChange={handleRadioChange(activeView)}
-                />
-              </div>
-              <div className="flex-1 flex items-center">
-                <MySlider
-                  key={1}
-                  min={10}
-                  max={25}
-                  unite="CPS"
-                  onChange={(value) => {
-                    console.log(`New slider value for ${activeView}: `, value);
-                    handleSliderChange(activeView, "sliderCPSValues")(value);
-                  }}
-                  defaultValue={viewConfig[view].sliderCPSValues}
-                  thumbLabels={["start", "end"]}
-                />
-              </div>
-            </div>
-            <div className="flex flex-row pt-50">
-              <div className="flex-1 pr-50 flex items-center">
-                <CheckboxGroup
-                  value={viewConfig[view].selected}
-                  onChange={handleCheckboxChange(activeView)}
-                >
-                  <Checkbox value="autoclickermenu">
-                    Activer l'autoclicker dans les menus
-                  </Checkbox>
-                  <Checkbox value="weapons">Uniquement sur les armes</Checkbox>
-                  <Checkbox value="blocks">Pouvoir casser les blocs</Checkbox>
-                  <Checkbox value="hit">Activer la hit sélection</Checkbox>
-                </CheckboxGroup>
-              </div>
-              <div className="flex-1 flex flex-col gap-20">
-                <h1 className="text-grey-200 font-bold text-20">
-                  TREMBLEMENT :<span className="text-grey-400"> MOYEN</span>
-                </h1>
-                <MySlider
-                  key={2}
-                  min={0}
-                  max={5}
-                  unite="CPS"
-                  onChange={handleSliderChange(activeView, "sliderTBMValues")}
-                  defaultValue={viewConfig[view].sliderTBMValues}
-                  thumbLabels={["start,end"]}
-                />
-              </div>
-            </div>
-            <div className="flex-1 flex flex-row gap-10 pt-25 border-t border-grey-500 ">
-              <div
-                onClick={() => toggleFavoriteStatus("AutoClicker")}
-                className="w-full h-50 cursor-pointer rounded-16 text-16 flex justify-center items-center text-grey-200 leading-[100%] font-bold bg-blur gap-10 hover:bg-goldyellowhover hover:text-goldyellow hover:drop-shadow-glow transition-all ease-in-out duration-200"
-              >
-                <UserProfile size={20} />
-                <div className="font-bold tracking-wider ">
-                  AJOUTER AUX FAVORIS
-                </div>
-              </div>
-              <div className="w-full h-50 cursor-pointer rounded-16 text-16 flex justify-center items-center text-grey-200 leading-[100%] font-bold bg-blur gap-10 hover:bg-goldyellowhover hover:text-goldyellow hover:drop-shadow-glow transition-all ease-in-out duration-200">
-                <UserProfile size={20} />
-                <div className="font-bold tracking-wider ">
-                  SUGGÉRER UN AJOUT
-                </div>
-              </div>
-            </div>
-          </>
+          <Autoclicker
+            isActive={isActive}
+            toggleFeatureStatus={toggleFeatureStatus}
+          />
         );
       case "FastPlace":
         return (
-          <>
-            <div className="flex flex-col gap-10">
-              <div className="flex flex-row justify-between items-center pb-25 border-b border-grey-500 ">
-                <div className="flex flex-row gap-25">
-                  <div className="flex">
-                    <img src="/minecraft-item/fastplace.png" alt="" />
-                  </div>
-                  <div className="flex flex-col gap-5">
-                    <h1 className="text-48 leading-8 font-bold font-PPNeueBit text-goldyellow">
-                      Fast Place
-                    </h1>
-                    <p className="text-20">CONFIGURATION</p>
-                  </div>
-                </div>
-                <div className="flex flex-col  items-center">
-                  <div className="button b2" id="button-13">
-                    <input
-                      onClick={() => toggleFeatureStatus("FastPlace")}
-                      type="checkbox"
-                      className="checkbox"
-                      checked={isActive}
-                    />
-                    <div className="knobs">
-                      <span></span>
-                    </div>
-                    <div className="layer"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-row ">
-              <div className="flex-1 pr-50">
-                <p className="text-20 text-grey-300">
-                  Ce module permet d'
-                  <span className="font-bold text-grey-100">
-                    automatiser le placement de blocs{" "}
-                  </span>
-                  lors d’un combat ou d’un MLG. Il imite les mouvements de votre
-                  souris,{" "}
-                  <span className="font-bold text-grey-100">
-                    comme si vous spammiez votre clic-droit.
-                  </span>
-                </p>
-              </div>
-              <div className="flex-1 ">
-                <div className=" bg-blur rounded-16 flex flex-row justify-end p-25 items-center h-fit ">
-                  <div>
-                    <p className="text-20 text-grey-100 font-bold">
-                      TOUCHE ASSOCIÉE : A
-                    </p>
-                    <p className="text-16 text-grey-300">
-                      Clique-ici pour changer la touche associée au module{" "}
-                      <span className="font-bold text-grey-200">
-                        FastPlace.
-                      </span>
-                    </p>
-                  </div>
-                  <div>
-                    <div className="w-[64px] h-[64px] rounded-8 border-2 text-goldyellow border-goldyellow bg-touche bg-cover drop-shadow-glowlight flex items-center justify-center font-bold text-24">
-                      A
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-row ">
-              <div className="flex-1 pr-50 flex items-center">
-                <MyRadioGroup
-                  options={viewConfig[view].options}
-                  selectedValue={viewConfig[view].selectedOption}
-                  onChange={handleRadioChange(activeView)}
-                />
-              </div>
-              <div className="flex-1 flex items-center">
-                <MySlider
-                  key={3}
-                  min={10}
-                  max={500}
-                  unite="CPS"
-                  onChange={handleSliderChange(activeView, "sliderCPSValues")}
-                  defaultValue={viewConfig[view].sliderCPSValues}
-                  thumbLabels={["start", "end"]}
-                />
-              </div>
-            </div>
-            <div className="flex flex-row pt-50">
-              <div className="flex-1 pr-50 flex items-center">
-                <CheckboxGroup
-                  value={viewConfig[view].selected}
-                  onChange={handleCheckboxChange(activeView)}
-                >
-                  <Checkbox value="handblock">
-                    Fonctionner seulement avec des blocs dans la main
-                  </Checkbox>
-                  <Checkbox value="scopeblock">
-                    Activer uniquement quand on vise un bloc
-                  </Checkbox>
-                </CheckboxGroup>
-              </div>
-              <div className="flex-1 flex flex-col gap-20">
-                <h1 className="text-grey-200 font-bold text-20">
-                  TREMBLEMENT :<span className="text-grey-400"> MOYEN</span>
-                </h1>
-                <MySlider
-                  key={4}
-                  min={0}
-                  max={5}
-                  unite="CPS"
-                  onChange={handleSliderChange(activeView, "sliderTBMValues")}
-                  defaultValue={viewConfig[view].sliderTBMValues}
-                  thumbLabels={["start,end"]}
-                />
-              </div>
-            </div>
-
-            <div className="flex-1 flex flex-row gap-10 pt-25 border-t border-grey-500 ">
-              <div
-                onClick={() => toggleFavoriteStatus("AutoClicker")}
-                className="w-full h-50 cursor-pointer rounded-16 text-16 flex justify-center items-center text-grey-200 leading-[100%] font-bold bg-blur gap-10 hover:bg-goldyellowhover hover:text-goldyellow hover:drop-shadow-glow transition-all ease-in-out duration-200"
-              >
-                <UserProfile size={20} />
-                <div className="font-bold tracking-wider ">
-                  AJOUTER AUX FAVORIS
-                </div>
-              </div>
-              <div className="w-full h-50 cursor-pointer rounded-16 text-16 flex justify-center items-center text-grey-200 leading-[100%] font-bold bg-blur gap-10 hover:bg-goldyellowhover hover:text-goldyellow hover:drop-shadow-glow transition-all ease-in-out duration-200">
-                <UserProfile size={20} />
-                <div className="font-bold tracking-wider ">
-                  SUGGÉRER UN AJOUT
-                </div>
-              </div>
-            </div>
-          </>
+          <FastPlace
+            isActive={isActive}
+            toggleFeatureStatus={toggleFeatureStatus}
+          />
         );
       case "AutoBlock":
         return (
-          <>
-            <div className="flex flex-col gap-10">
-              <div className="flex flex-row justify-between items-center pb-25 border-b border-grey-500 ">
-                <div className="flex flex-row gap-25">
-                  <div className="flex">
-                    <img src="/minecraft-item/autoblock.png" alt="" />
-                  </div>
-                  <div className="flex flex-col gap-5">
-                    <h1 className="text-48 leading-8 font-bold font-PPNeueBit text-goldyellow">
-                      Auto Block
-                    </h1>
-                    <p className="text-20">CONFIGURATION</p>
-                  </div>
-                </div>
-                <div className="flex flex-col  items-center">
-                  <div className="button b2" id="button-13">
-                    <input
-                      onClick={() => toggleFeatureStatus("AutoBlock")}
-                      type="checkbox"
-                      className="checkbox"
-                      checked={isActive}
-                    />
-                    <div className="knobs">
-                      <span></span>
-                    </div>
-                    <div className="layer"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-row ">
-              <div className="flex-1 pr-50">
-                <p className="text-20 text-grey-300">
-                  Ce module permet de{" "}
-                  <span className="font-bold text-grey-100">
-                    parer les coups facilement à votre place.{" "}
-                  </span>
-                  C’est utile pour diviser les dégats en jeu et faire du
-                  Hit&Block.
-                </p>
-              </div>
-              <div className="flex-1 ">
-                <div className=" bg-blur rounded-16 flex flex-row justify-end p-25 items-center h-fit ">
-                  <div>
-                    <p className="text-20 text-grey-100 font-bold">
-                      TOUCHE ASSOCIÉE : X
-                    </p>
-                    <p className="text-16 text-grey-300">
-                      Clique-ici pour changer la touche associée au module{" "}
-                      <span className="font-bold text-grey-200">
-                        Auto Clicker.
-                      </span>
-                    </p>
-                  </div>
-                  <div>
-                    <div className="w-[64px] h-[64px] rounded-8 border-2 text-goldyellow border-goldyellow bg-touche bg-cover drop-shadow-glowlight flex items-center justify-center font-bold text-24">
-                      X
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-row ">
-              <div className="flex-1 pr-50 flex items-center">
-                <MyRadioGroup
-                  options={viewConfig[view].options}
-                  selectedValue={viewConfig[view].selectedOption}
-                  onChange={handleRadioChange(activeView)}
-                />
-              </div>
-              <div className="flex-1 flex flex-col gap-20">
-                <h1 className="text-grey-200 font-bold text-20">
-                  DURÉE MAXIMALE :
-                </h1>
-                <MySlider
-                  key={5}
-                  min={10}
-                  max={25}
-                  unite="CPS"
-                  onChange={handleSliderChange(activeView, "sliderCPSValues")}
-                  defaultValue={viewConfig[view].sliderCPSValues}
-                  thumbLabels={["start", "end"]}
-                />
-              </div>
-            </div>
-            <div className="flex flex-row pt-50">
-              <div className="flex-1 pr-50 flex items-center"></div>
-              <div className="flex-1 flex flex-col gap-20">
-                <h1 className="text-grey-200 font-bold text-20">COOLDOWN</h1>
-                <MySlider
-                  key={6}
-                  min={0}
-                  max={5}
-                  unite="CPS"
-                  onChange={handleSliderChange(activeView, "sliderTBMValues")}
-                  defaultValue={viewConfig[view].sliderTBMValues}
-                  thumbLabels={["start,end"]}
-                />
-              </div>
-            </div>
-
-            <div className="flex-1 flex flex-row gap-10 pt-25 border-t border-grey-500 ">
-              <div
-                onClick={() => toggleFavoriteStatus("AutoClicker")}
-                className="w-full h-50 cursor-pointer rounded-16 text-16 flex justify-center items-center text-grey-200 leading-[100%] font-bold bg-blur gap-10 hover:bg-goldyellowhover hover:text-goldyellow hover:drop-shadow-glow transition-all ease-in-out duration-200"
-              >
-                <UserProfile size={20} />
-                <div className="font-bold tracking-wider ">
-                  AJOUTER AUX FAVORIS
-                </div>
-              </div>
-              <div className="w-full h-50 cursor-pointer rounded-16 text-16 flex justify-center items-center text-grey-200 leading-[100%] font-bold bg-blur gap-10 hover:bg-goldyellowhover hover:text-goldyellow hover:drop-shadow-glow transition-all ease-in-out duration-200">
-                <UserProfile size={20} />
-                <div className="font-bold tracking-wider ">
-                  SUGGÉRER UN AJOUT
-                </div>
-              </div>
-            </div>
-          </>
+          <AutoBlock
+            isActive={isActive}
+            toggleFeatureStatus={toggleFeatureStatus}
+          />
         );
       default:
         return <div className="">Please select a feature to configure.</div>;
@@ -564,15 +257,19 @@ export const Modules: React.FC<ModulesProps> = ({ showfavorite, setView }) => {
 
   useEffect(() => {
     renderView();
-  }, [activeView, viewConfig]); // Update renderView when activeView or viewConfig changes
+  }, [activeView, viewConfig]);
+
+  if (loading) {
+    return <Spinner text="Chargement..." />;
+  }
 
   return (
     <>
       {showfavorite ? (
-        <div className="flex flex-row w-full gap-20">
+        <div className="flex flex-row w-full gap-20 h-fit">
           {featureFavoriteStatus
             .filter((feature) => feature.isFavorite)
-            .slice(0, 4) // Affiche uniquement les 4 premiers favoris
+            .slice(0, 4)
             .map((feature, index) => (
               <FeatureCard
                 key={index}
@@ -601,13 +298,13 @@ export const Modules: React.FC<ModulesProps> = ({ showfavorite, setView }) => {
           }).map((_, index) => (
             <div
               key={`empty-${index}`}
-              className="flex flex-col rounded-16 bg-blur border-2 p-25 items-center justify-between cursor-pointer transition-all ease-in-out duration-200 flex-1 border-blur feature-card"
+              className="flex flex-col rounded-16 bg-blur border-2 p-25 items-center  cursor-pointer transition-all ease-in-out duration-200 flex-1 border-blur feature-card"
               onClick={() => handleFeatureCardClick("modules")}
             >
-              <div className="flex flex-row justify-between w-full cursor-pointer h-[34px] gap-20"></div>
+              <div className="flex flex-row justify-between w-full cursor-pointer h-[24px] gap-20"></div>
               <div className="flex flex-col w-full items-center">
                 <div className="flex items-center justify-center w-[74px] h-[74px] border border-grey-400 text-grey-400 rounded-full transition-all ease-in-out duration-200 inner-circle">
-                  <UserProfile size={24} />
+                  <Add size={24} />
                 </div>
                 <p className="font-PPNeueBit text-36 text-grey-200">
                   Emplacement vide
@@ -621,8 +318,8 @@ export const Modules: React.FC<ModulesProps> = ({ showfavorite, setView }) => {
       ) : (
         <div className="flex flex-row gap-20 h-full w-full overflow-hidden">
           <div className="w-[300px] flex flex-col gap-10 min-h-full overflow-hidden">
-            <div className="flex flex-col gap-10 overflow-hidden no-scrollbar relative">
-              <div className="flex flex-col  gap-10 overflow-scroll no-scrollbar">
+            <div className="flex flex-col gap-10 overflow-hidden no-scrollbar relative rounded-16">
+              <div className="flex flex-col gap-10 overflow-scroll no-scrollbar">
                 <FeatureCard
                   imageUrl="/minecraft-item/autoclicker.png"
                   titre="Auto Clicker"
@@ -674,8 +371,36 @@ export const Modules: React.FC<ModulesProps> = ({ showfavorite, setView }) => {
               </div>
             </div>
           </div>
-          <div className="flex-1 p-50 flex flex-col gap-50 bg-blur rounded-16">
-            {renderView()}
+
+          <div className="flex-1 rounded-16 ">
+            <div className="flex-1 p-25 pb-0 flex flex-col gap-50 bg-blur rounded-t-16 h-full overflow-y-scroll scrollbar-hide rounded-16">
+              {renderView()}
+            </div>
+
+            <div className="flex-1 flex flex-row gap-10 p-25 border-t border-grey-500 sticky bg-blur bottom-0 rounded-b-16">
+              <div
+                onClick={() => {
+                  if (activeView) {
+                    toggleFavoriteStatus(activeView as ViewNames);
+                  }
+                }}
+                className="w-full h-50 cursor-pointer rounded-16 text-16 flex justify-center items-center text-grey-200 leading-[100%] font-bold bg-blur gap-10 hover:bg-goldyellowhover hover:text-goldyellow hover:drop-shadow-glow transition-all ease-in-out duration-200"
+              >
+                <Star size={20} />
+                <div className="font-bold tracking-wider">
+                  AJOUTER AUX FAVORIS
+                </div>
+              </div>
+              <Link
+                href="#"
+                className="w-full h-50 cursor-pointer rounded-16 text-16 flex justify-center items-center text-grey-200 leading-[100%] font-bold bg-blur gap-10 hover:bg-goldyellowhover hover:text-goldyellow hover:drop-shadow-glow transition-all ease-in-out duration-200"
+              >
+                <SuggestFeature size={20} />
+                <div className="font-bold tracking-wider">
+                  SUGGÉRER UN AJOUT
+                </div>
+              </Link>
+            </div>
           </div>
         </div>
       )}

@@ -12,7 +12,7 @@ interface FeatureConfig {
   options: string[];
   selectedOption: string;
   selected: string[];
-  sliderCPSValues: [number, number];
+  sliderCPSValues: [number, number] | number;
   sliderTBMValues: number;
   // Add other properties if necessary
 }
@@ -29,15 +29,15 @@ const initialViewConfig: ViewConfig = {
     options: ["NATUREL", "BLATANT"],
     selectedOption: "BLATANT",
     selected: ["handblock", "scopeblock"],
-    sliderCPSValues: [16, 21],
+    sliderCPSValues: 140,
     sliderTBMValues: 0,
   },
   AutoBlock: {
     options: ["MANUEL", "AUTOMATIQUE"],
     selectedOption: "AUTOMATIQUE",
     selected: [],
-    sliderCPSValues: [140, 400],
-    sliderTBMValues: 370,
+    sliderCPSValues: 12,
+    sliderTBMValues: 4,
   },
   RandomFeature: {
     options: ["MANUEL", "AUTOMATIQUE"],

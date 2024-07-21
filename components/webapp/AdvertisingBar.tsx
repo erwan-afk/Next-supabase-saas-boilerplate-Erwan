@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { UserProfile } from "../icons/icons";
+import { Gift, HandShake, UserProfile } from "../icons/icons";
 
 export const AdvertisingBar: React.FC = () => {
   const marqueeContentRef = useRef<HTMLDivElement>(null);
@@ -13,47 +13,47 @@ export const AdvertisingBar: React.FC = () => {
   }, []);
 
   return (
-    <div className=" h-fit bg-gradient-to-r from-goldgradient-dark to-goldgradient-light flex items-center overflow-hidden marquee gap-20 rounded-16">
+    <div className="min-h-[60px] bg-gradient-to-r from-goldgradient-dark to-goldgradient-light flex items-center overflow-hidden marquee gap-20 rounded-16">
       <div
         className="marquee-content flex items-center gap-20 text-grey-600"
         ref={marqueeContentRef}
       >
-        <UserProfile size={20} />
+        <HandShake size={22} />
         <div>
           <span className="font-extrabold text-30 align-text-middle">
             Parraine
           </span>
           <span className=" font-PPNeueBit text-40"> un ami</span>
         </div>
-        <UserProfile size={20} />
+        <Gift size={22} />
         <div>
           <span className="font-extrabold text-30 align-text-middle">
             Gagne des jours
           </span>
           <span className=" font-PPNeueBit text-40"> gratuits</span>
         </div>
-        <UserProfile size={20} />
+        <HandShake size={22} />
         <div>
           <span className="font-extrabold text-30 align-text-middle">
             Parraine
           </span>
           <span className=" font-PPNeueBit text-40"> un ami</span>
         </div>
-        <UserProfile size={20} />
+        <Gift size={22} />
         <div>
           <span className="font-extrabold text-30 align-text-middle">
             Gagne des jours
           </span>
           <span className=" font-PPNeueBit text-40"> gratuits</span>
         </div>
-        <UserProfile size={20} />
+        <HandShake size={22} />
         <div>
           <span className="font-extrabold text-30 align-text-middle">
             Parraine
           </span>
           <span className=" font-PPNeueBit text-40"> un ami</span>
         </div>
-        <UserProfile size={20} />
+        <Gift size={22} />
         <div>
           <span className="font-extrabold text-30 align-text-middle">
             Gagne des jours

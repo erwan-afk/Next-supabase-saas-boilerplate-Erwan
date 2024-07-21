@@ -1,5 +1,5 @@
 import React from "react";
-import { UserProfile } from "../icons/icons";
+import { Star, UserProfile } from "../icons/icons";
 
 interface FeatureCardProps {
   onEditView: () => void; // Nouvelle fonction pour gérer la vue de modification
@@ -28,8 +28,8 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
 }) => {
   return (
     <div
-      className={`flex flex-col rounded-16 bg-blur border-2 p-25 items-center justify-between cursor-pointer transition-all ease-in-out duration-200 
-        ${showcase ? "flex-1" : "min-h-[300px]"} 
+      className={`flex flex-col rounded-16 bg-blur p-25 items-center  cursor-pointer transition-all border-2 ease-in-out duration-200 
+        ${showcase ? "flex-1 h-fit" : "min-h-[300px] justify-between"} 
         ${isActive ? "border-blur" : "border-goldyellow"}`}
       onClick={showcase ? undefined : toggleActive}
     >
@@ -46,8 +46,8 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
           {isActive ? "DÉSACTIVER" : "ACTIVER"}
         </button>
 
-        <UserProfile
-          size={20}
+        <Star
+          size={27}
           className={`cursor-pointer transition-all ease-in-out duration-200 ${
             isFavorite ? "text-goldyellow" : "text-blur"
           }`}
@@ -58,7 +58,10 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
         />
       </div>
       <div className="flex flex-col w-full items-center">
-        <img className="w-[64px] h-[64px]" src={imageUrl} />
+        <img
+          className={`w-[64px] h-[64px]  ${showcase} ? "mt-25" : "" `}
+          src={imageUrl}
+        />
         <p
           className={`font-PPNeueBit text-36 ${
             isActive ? " text-grey-300" : "text-goldyellow"
@@ -78,7 +81,7 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
             e.stopPropagation();
             onEditView();
           }}
-          className="w-full h-50 rounded-16 text-16 flex justify-center items-center text-grey-200 leading-[100%] font-bold bg-blur gap-10 hover:bg-goldyellowhover hover:text-goldyellow hover:drop-shadow-glow transition-all ease-in-out duration-200"
+          className="w-full h-50 rounded-16 text-16 flex justify-center items-center text-grey-200 leading-[100%] font-bold bg-lowwhite gap-10 hover:bg-goldyellowhover hover:text-goldyellow hover:drop-shadow-glow transition-all ease-in-out duration-200"
         >
           <UserProfile size={20} />
           <div className="font-bold tracking-wider ">CONFIGURER</div>
